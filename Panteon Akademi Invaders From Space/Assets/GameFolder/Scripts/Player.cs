@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] GameObject _bulletPrefab;
+    [SerializeField] private ObjectPool _objectPool;
     private const float _maxX = 2.4f;
     private const float _minX = -2.4f;
     private float _speed = 3;
@@ -30,7 +31,9 @@ public class Player : MonoBehaviour
         IEnumerator Shoot()
         {
             _isShooting = true;
-            Instantiate(_bulletPrefab, transform.position, Quaternion.identity);
+            //Instantiate(_bulletPrefab, transform.position, Quaternion.identity);
+            GameObject obj = _objectPool.GetPooledObject();
+            obj.transform.position = gameObject.transform.position;
             yield return new WaitForSeconds(_cooldown);
             _isShooting = false;
         }
