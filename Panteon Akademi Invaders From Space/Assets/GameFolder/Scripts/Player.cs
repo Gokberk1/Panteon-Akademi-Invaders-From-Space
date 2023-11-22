@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] GameObject _bulletPrefab;
     [SerializeField] private ObjectPool _objectPool;
-    private const float _maxX = 2.4f;
-    private const float _minX = -2.4f;
+    private const float _maxX = 4f;
+    private const float _minX = -4f;
     private float _speed = 3;
     private float _cooldown = 0.5f;
     private bool _isShooting;
@@ -27,15 +26,32 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(Shoot());
         }
+    }
 
-        IEnumerator Shoot()
+    IEnumerator Shoot()
+    {
+        _isShooting = true;
+        //Instantiate(_bulletPrefab, transform.position, Quaternion.identity);
+        GameObject obj = _objectPool.GetPooledObject();
+        obj.transform.position = gameObject.transform.position;
+        yield return new WaitForSeconds(_cooldown);
+        _isShooting = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyBullet"))
         {
-            _isShooting = true;
-            //Instantiate(_bulletPrefab, transform.position, Quaternion.identity);
-            GameObject obj = _objectPool.GetPooledObject();
-            obj.transform.position = gameObject.transform.position;
-            yield return new WaitForSeconds(_cooldown);
-            _isShooting = false;
+            collision.gameObject.SetActive(false);
+            TakeDamage();
         }
     }
+
+    void TakeDamage()
+    {
+
+    }
+
+
+
 }

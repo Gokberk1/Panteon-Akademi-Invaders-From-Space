@@ -10,4 +10,22 @@ public class FriendlyBullet : MonoBehaviour
     {
         transform.Translate(Vector2.up * _speed * Time.deltaTime);        
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Alien"))
+        {
+            //Destroy(gameObject);
+            collision.gameObject.GetComponent<Alien>().Kill();
+            gameObject.SetActive(false);
+        }
+        if (collision.gameObject.CompareTag("EnemyBullet"))
+        {
+            //Destroy(collision.gameObject);
+            //Destroy(gameObject);
+
+            collision.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
+    }
 }

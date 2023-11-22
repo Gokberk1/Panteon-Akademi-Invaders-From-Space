@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AlienMaster : MonoBehaviour
 {
-    [SerializeField] GameObject _bulletPrefab;
+    [SerializeField] private ObjectPool _objectPool;
+
     private Vector3 _hMoveDistance = new Vector3(0.05f, 0, 0);
     private Vector3 _vMoveDistance = new Vector3(0, 0.15f, 0);
 
@@ -17,10 +18,20 @@ public class AlienMaster : MonoBehaviour
 
     private float _moveTimer = 0.01f;
     private float _moveTime = 0.005f;
-
     private const float MAX_MOVE_SPEED = 0.02f;
 
-    // Start is called before the first frame update
+    private float _shootTimer = 3f;
+    private const float _shootTime = 3f;
+
+
+    [SerializeField] GameObject _motherShip;
+    private Vector3 _motherShipSpawnPos = new Vector3(5, 4.5f, 0);
+    private float _motherShipTimer = 60f;
+    private const float MOTHERSHÝP_MÝN = 15f;
+    private const float MOTHERSHÝP_MAX = 60f;
+
+
+
     void Start()
     {
         foreach(GameObject go in GameObject.FindGameObjectsWithTag("Alien"))
@@ -36,7 +47,18 @@ public class AlienMaster : MonoBehaviour
         {
             MoveEnemies();
         }
+        if (_shootTimer <= 0)
+        {
+            Shoot();
+        }
+        if(_motherShipTimer <= 0)
+        {
+            SpawnMotherShip();
+        }
+
         _moveTimer -= Time.deltaTime;
+        _shootTimer -= Time.deltaTime;
+        _motherShipTimer -= Time.deltaTime;
     }
 
     private void MoveEnemies()
@@ -85,4 +107,22 @@ public class AlienMaster : MonoBehaviour
             return f;
         }
     }
+
+    private void Shoot()
+    {
+        Vector2 pos = _allAliens[Random.Range(0, _allAliens.Count)].transform.position;
+
+        //Instantiate(_bulletPrefab, pos, Quaternion.identity);
+        GameObject obj = _objectPool.GetPooledObject();
+        obj.transform.position = pos;
+
+        _shootTimer = _shootTime;
+    }
+
+    private void SpawnMotherShip()
+    {
+        Instantiate(_motherShip, _motherShipSpawnPos, Quaternion.identity);
+        _motherShipTimer = Random.Range(MOTHERSHÝP_MÝN, MOTHERSHÝP_MAX);
+    }
+
 }
