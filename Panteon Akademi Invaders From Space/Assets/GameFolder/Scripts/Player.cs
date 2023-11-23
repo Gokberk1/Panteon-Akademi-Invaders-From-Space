@@ -5,22 +5,32 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private ObjectPool _objectPool;
+    [SerializeField] ShipStats _shipStats;
     private const float _maxX = 4f;
     private const float _minX = -4f;
-    private float _speed = 3;
-    private float _cooldown = 0.5f;
+    //private float _speed = 3;
+    //private float _cooldown = 0.5f;
     private bool _isShooting;
 
-    // Update is called once per frame
+    private Vector2 _offScreenPos = new Vector2(0, -20);
+    private Vector2 _startPos = new Vector2(0, -5);
+
+    private void Start()
+    {
+        _shipStats._currentHealth = _shipStats._maxHealth;
+        _shipStats._currentLifes = _shipStats._maxLifes;
+        transform.position = _startPos;
+    }
+
     void Update()
     {
         if (Input.GetKey(KeyCode.A) && transform.position.x > _minX)
         {
-            transform.Translate(Vector2.left * _speed * Time.deltaTime);
+            transform.Translate(Vector2.left * _shipStats._shipSpeed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.D) && transform.position.x < _maxX)
         {
-            transform.Translate(Vector2.right * _speed * Time.deltaTime);
+            transform.Translate(Vector2.right * _shipStats._shipSpeed * Time.deltaTime);
         }
         if (Input.GetKey(KeyCode.Space) && !_isShooting)
         {
@@ -34,7 +44,7 @@ public class Player : MonoBehaviour
         //Instantiate(_bulletPrefab, transform.position, Quaternion.identity);
         GameObject obj = _objectPool.GetPooledObject();
         obj.transform.position = gameObject.transform.position;
-        yield return new WaitForSeconds(_cooldown);
+        yield return new WaitForSeconds(_shipStats._fireRate);
         _isShooting = false;
     }
 
@@ -49,7 +59,31 @@ public class Player : MonoBehaviour
 
     void TakeDamage()
     {
+        _shipStats._currentHealth--;
 
+        if (_shipStats._currentHealth <= 0)
+        {
+            _shipStats._currentLifes--;
+
+            if (_shipStats._currentLifes <= 0)
+            {
+                Debug.Log("game over");
+            }
+            else
+            {
+                Debug.Log("respawn");
+                StartCoroutine(Respawn());
+            }
+        }
+       
+    }
+
+    IEnumerator Respawn()
+    {
+        transform.position = _offScreenPos;
+        yield return new WaitForSeconds(2);
+        _shipStats._currentHealth = _shipStats._maxHealth;
+        transform.position = _startPos;
     }
 
 

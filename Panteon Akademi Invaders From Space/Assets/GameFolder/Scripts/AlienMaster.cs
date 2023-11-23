@@ -25,8 +25,8 @@ public class AlienMaster : MonoBehaviour
 
 
     [SerializeField] GameObject _motherShip;
-    private Vector3 _motherShipSpawnPos = new Vector3(5, 4.5f, 0);
-    private float _motherShipTimer = 60f;
+    private Vector3 _motherShipSpawnPos = new Vector3(5, 6.5f, 0);
+    private float _motherShipTimer = 5f;
     private const float MOTHERSHÝP_MÝN = 15f;
     private const float MOTHERSHÝP_MAX = 60f;
 
