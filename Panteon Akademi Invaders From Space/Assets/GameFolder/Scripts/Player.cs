@@ -15,11 +15,15 @@ public class Player : MonoBehaviour
     private Vector2 _offScreenPos = new Vector2(0, -20);
     private Vector2 _startPos = new Vector2(0, -5);
 
+    private float _dirextionX;
+
     private void Start()
     {
         _shipStats._currentHealth = _shipStats._maxHealth;
         _shipStats._currentLifes = _shipStats._maxLifes;
         transform.position = _startPos;
+        UIManager.UpdateHealthBar(_shipStats._currentHealth);
+        UIManager.UpdateLives(_shipStats._currentLifes);
     }
 
     void Update()
@@ -35,6 +39,50 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && !_isShooting)
         {
             StartCoroutine(Shoot());
+        }
+
+        _dirextionX = Input.acceleration.x;
+        if(_dirextionX <= -0.1f && transform.position.x > _minX)
+        {
+            transform.Translate(Vector2.left * _shipStats._shipSpeed * Time.deltaTime);
+        }
+        else if(_dirextionX >= 0.1f && transform.position.x < _maxX)
+        {
+            transform.Translate(Vector2.right * _shipStats._shipSpeed * Time.deltaTime);
+        }
+    }
+
+    public void ShootButton()
+    {
+        if (!_isShooting)
+        {
+            StartCoroutine(Shoot());
+        }
+    }
+
+    public void AddHealth()
+    {
+        if(_shipStats._currentHealth == _shipStats._maxHealth)
+        {
+            UIManager.UpdateScore(250);
+        }
+        else
+        {
+            _shipStats._currentHealth++;
+            UIManager.UpdateHealthBar(_shipStats._currentHealth);
+        }
+    }
+
+    public void AddLife()
+    {
+        if (_shipStats._currentLifes == _shipStats._maxLifes)
+        {
+            UIManager.UpdateScore(1000);
+        }
+        else
+        {
+            _shipStats._currentLifes++;
+            UIManager.UpdateLives(_shipStats._currentLifes);
         }
     }
 
@@ -60,10 +108,13 @@ public class Player : MonoBehaviour
     void TakeDamage()
     {
         _shipStats._currentHealth--;
+        UIManager.UpdateHealthBar(_shipStats._currentHealth);
 
         if (_shipStats._currentHealth <= 0)
         {
             _shipStats._currentLifes--;
+
+            UIManager.UpdateLives(_shipStats._currentLifes);
 
             if (_shipStats._currentLifes <= 0)
             {
@@ -84,6 +135,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(2);
         _shipStats._currentHealth = _shipStats._maxHealth;
         transform.position = _startPos;
+        UIManager.UpdateHealthBar(_shipStats._currentHealth);
     }
 
 

@@ -15,6 +15,9 @@ public class AlienMaster : MonoBehaviour
     public static List<GameObject> _allAliens = new List<GameObject>();
 
     private bool _movingRight;
+    private bool _entering = true;
+
+    private const float START_Y = -0.5f;
 
     private float _moveTimer = 0.01f;
     private float _moveTime = 0.005f;
@@ -25,7 +28,7 @@ public class AlienMaster : MonoBehaviour
 
 
     [SerializeField] GameObject _motherShip;
-    private Vector3 _motherShipSpawnPos = new Vector3(5, 6.5f, 0);
+    private Vector3 _motherShipSpawnPos = new Vector3(5, 4.5f, 0);
     private float _motherShipTimer = 5f;
     private const float MOTHERSHÝP_MÝN = 15f;
     private const float MOTHERSHÝP_MAX = 60f;
@@ -43,22 +46,36 @@ public class AlienMaster : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_moveTimer <= 0)
+        if (_entering)
         {
-            MoveEnemies();
+            transform.Translate(Vector2.down * 10 * Time.deltaTime);
+
+            if(transform.position.y <= START_Y)
+            {
+                _entering = false;
+            }
         }
-        if (_shootTimer <= 0)
+        else
         {
-            Shoot();
-        }
-        if(_motherShipTimer <= 0)
-        {
-            SpawnMotherShip();
+            if (_moveTimer <= 0)
+            {
+                MoveEnemies();
+            }
+            if (_shootTimer <= 0)
+            {
+                Shoot();
+            }
+            if (_motherShipTimer <= 0)
+            {
+                SpawnMotherShip();
+            }
+
+            _moveTimer -= Time.deltaTime;
+            _shootTimer -= Time.deltaTime;
+            _motherShipTimer -= Time.deltaTime;
         }
 
-        _moveTimer -= Time.deltaTime;
-        _shootTimer -= Time.deltaTime;
-        _motherShipTimer -= Time.deltaTime;
+        
     }
 
     private void MoveEnemies()
